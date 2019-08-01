@@ -30,6 +30,9 @@ public:
 	UPROPERTY(config)
 	TArray<struct FNamePair> NamePairs;
 
+	typedef void (UParsingUserWidget::*FunctionPtrType) (void);
+	TMap<FString, FunctionPtrType> FunctionMap;
+
 protected:
 	virtual void NativeConstruct() override;
 

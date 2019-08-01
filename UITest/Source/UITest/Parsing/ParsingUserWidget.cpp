@@ -10,16 +10,19 @@ void UParsingUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	Buttons[0] = Cast<UButton>(GetWidgetFromName(*NamePairs[0].Button));
+	FunctionMap.Add(TEXT("Func01"), &UParsingUserWidget::Func01);
+	FunctionMap.Add(TEXT("Func02"), &UParsingUserWidget::Func02);
+
+	Buttons.Add(Cast<UButton>(GetWidgetFromName(*NamePairs[0].Button)));
 	check(Buttons[0] != nullptr);
-	Buttons[0]->OnClicked.AddDynamic(this, *NamePairs[0].Function);
+	Buttons[0]->OnClicked.AddDynamic(this, FunctionMap[NamePairs[0].Function]);
 	UTextBlock* Button01Text = Cast<UTextBlock>(Buttons[0]->GetChildAt(0));
 	check(Button01Text != nullptr);
 	Button01Text->SetText(FText::FromString(NamePairs[0].Function));
 
-	Buttons[1] = Cast<UButton>(GetWidgetFromName(*NamePairs[1].Button));
+	Buttons.Add(Cast<UButton>(GetWidgetFromName(*NamePairs[1].Button)));
 	check(Buttons[1] != nullptr);
-	Buttons[1]->OnClicked.AddDynamic(this, *NamePairs[1].Function);
+	Buttons[1]->OnClicked.AddDynamic(this, FunctionMap[NamePairs[1].Function]);
 	UTextBlock* Button02Text = Cast<UTextBlock>(Buttons[1]->GetChildAt(0));
 	check(Button02Text != nullptr);
 	Button02Text->SetText(FText::FromString(NamePairs[1].Function));
