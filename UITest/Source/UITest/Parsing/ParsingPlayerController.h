@@ -24,9 +24,12 @@ private:
 	UFUNCTION(Exec)
 	void ToggleWidget();
 
+	UFUNCTION(Exec)
+	void ReloadWidget();
+
 	UPROPERTY()
 	TSubclassOf<class UParsingUserWidget> WidgetClass;
-
+	
 	UPROPERTY()
 	class UParsingUserWidget* Widget;
 };

@@ -21,29 +21,14 @@ struct FNamePair
 	FString DisplayName;
 };
 
-/**
- * 
- */
-UCLASS(config=Widget)
-class UITEST_API UParsingUserWidget : public UUserWidget
+UCLASS()
+class UButtonProxy : public UObject
 {
 	GENERATED_BODY()
-	
+
 public:
-	UParsingUserWidget(const FObjectInitializer& ObjectInitializer);
-
-	UPROPERTY(config)
-	TArray<struct FNamePair> NamePairs;
-
-	typedef void (UParsingUserWidget::*FunctionPtrType) (void);
-	TMap<FString, FunctionPtrType> FunctionMap;
-
-protected:
-	virtual void NativeConstruct() override;
-
-private:
 	UFUNCTION()
-	void Init();
+	void ExecCommand();
 
 	UFUNCTION()
 	void UpdateLog(FString Message);
@@ -51,22 +36,36 @@ private:
 	UFUNCTION()
 	void FadeOutLog();
 
-	UFUNCTION()
+	FString Command;
+	FTimerHandle TimerHandle;
+	class UTextBlock* DrawLogText;
+	class AParsingPlayerController* PlayerController;
+};
+
+/**
+ * 
+ */
+UCLASS(config=Widget)
+class UITEST_API UParsingUserWidget : public UUserWidget
+{
+	GENERATED_BODY()
+		
+public:
 	void Reload();
 
-	UFUNCTION()
-	void Func01();
+protected:
+	void Load();
+	virtual void NativeConstruct() override;
 
-	UFUNCTION()
-	void Func02();
-
-	UPROPERTY()
+private:
+	UPROPERTY(config)
+	TArray<struct FNamePair> NamePairs;
+	
+	FString ConfigSection;
+	FString ConfigFile;
 	TArray<class UButton*> Buttons;
-
-	UPROPERTY()
+	TArray<class UButtonProxy*> Proxies;
 	class UTextBlock* DrawLogText;
-
 	FTimerHandle TimerHandle;
-
 	class AParsingPlayerController* PlayerController;
 };

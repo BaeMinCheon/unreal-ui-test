@@ -31,3 +31,8 @@ void AParsingPlayerController::ToggleWidget()
 		Widget->AddToViewport();
 	}
 }
+
+void AParsingPlayerController::ReloadWidget()
+{
+	Widget->Reload();
+}
