@@ -5,44 +5,48 @@
 #include "Components/TextBlock.h"
 #include "Public/TimerManager.h"
 #include "Engine/World.h"
+#include "ParsingPlayerController.h"
+#include "Misc/Paths.h"
+#include "Misc/ConfigCacheIni.h"
+
+UParsingUserWidget::UParsingUserWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	FunctionMap.Add(TEXT("Reload"), &UParsingUserWidget::Reload);
+	FunctionMap.Add(TEXT("Func01"), &UParsingUserWidget::Func01);
+	FunctionMap.Add(TEXT("Func02"), &UParsingUserWidget::Func02);
+}
 
 void UParsingUserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	FunctionMap.Add(TEXT("Func01"), &UParsingUserWidget::Func01);
-	FunctionMap.Add(TEXT("Func02"), &UParsingUserWidget::Func02);
-
-	Buttons.Add(Cast<UButton>(GetWidgetFromName(*NamePairs[0].Button)));
-	check(Buttons[0] != nullptr);
-	Buttons[0]->OnClicked.AddDynamic(this, FunctionMap[NamePairs[0].Function]);
-	UTextBlock* Button01Text = Cast<UTextBlock>(Buttons[0]->GetChildAt(0));
-	check(Button01Text != nullptr);
-	Button01Text->SetText(FText::FromString(NamePairs[0].Function));
-
-	Buttons.Add(Cast<UButton>(GetWidgetFromName(*NamePairs[1].Button)));
-	check(Buttons[1] != nullptr);
-	Buttons[1]->OnClicked.AddDynamic(this, FunctionMap[NamePairs[1].Function]);
-	UTextBlock* Button02Text = Cast<UTextBlock>(Buttons[1]->GetChildAt(0));
-	check(Button02Text != nullptr);
-	Button02Text->SetText(FText::FromString(NamePairs[1].Function));
-
-	DrawLogText = Cast<UTextBlock>(GetWidgetFromName(*NamePairs[1].Function));
-	check(DrawLogText != nullptr);
+	Init();
 }
 
-void UParsingUserWidget::Func01()
+void UParsingUserWidget::Init()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Func01 Executed !"));
+	Buttons.Empty();
 
-	UpdateLog(TEXT("Func01"));
-}
+	for (int i = 0; i < 2; ++i)
+	{
+		FName ButtonName(*NamePairs[i].ButtonName);
+		Buttons.Add(Cast<UButton>(GetWidgetFromName(ButtonName)));
 
-void UParsingUserWidget::Func02()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Func02 Executed !"));
+		FunctionPtrType FunctionPtr = FunctionMap[NamePairs[i].FunctionName];
+		FName FunctionName(*NamePairs[i].FunctionName);
+		Buttons[i]->OnClicked.Clear();
+		Buttons[i]->OnClicked.__Internal_AddDynamic(this, FunctionPtr, FunctionName);
 
-	UpdateLog(TEXT("Func02"));
+		UTextBlock* Button01Text = Cast<UTextBlock>(Buttons[i]->GetChildAt(0));
+		Button01Text->SetText(FText::FromString(NamePairs[i].DisplayName));
+	}
+
+	FName TextName(TEXT("DrawLog_Text"));
+	DrawLogText = Cast<UTextBlock>(GetWidgetFromName(TextName));
+	DrawLogText->SetOpacity(0.0f);
+
+	PlayerController = Cast<AParsingPlayerController>(GetWorld()->GetFirstPlayerController());
 }
 
 void UParsingUserWidget::UpdateLog(FString Message)
@@ -66,4 +70,24 @@ void UParsingUserWidget::FadeOutLog()
 	{
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UParsingUserWidget::FadeOutLog, 0.1f, false);
 	}
+}
+
+void UParsingUserWidget::Reload()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Reload Executed !"));
+	UpdateLog(TEXT("Reload"));
+
+	Init();
+}
+
+void UParsingUserWidget::Func01()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Func01 Executed !"));
+	UpdateLog(TEXT("Func01"));
+}
+
+void UParsingUserWidget::Func02()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Func02 Executed !"));
+	UpdateLog(TEXT("Func02"));
 }

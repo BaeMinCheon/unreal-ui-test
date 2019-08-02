@@ -12,10 +12,13 @@ struct FNamePair
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FString Button;
-
+	FString ButtonName;
+	
 	UPROPERTY()
-	FString Function;
+	FString FunctionName;
+	
+	UPROPERTY()
+	FString DisplayName;
 };
 
 /**
@@ -27,6 +30,8 @@ class UITEST_API UParsingUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UParsingUserWidget(const FObjectInitializer& ObjectInitializer);
+
 	UPROPERTY(config)
 	TArray<struct FNamePair> NamePairs;
 
@@ -38,16 +43,22 @@ protected:
 
 private:
 	UFUNCTION()
-	void Func01();
-
-	UFUNCTION()
-	void Func02();
+	void Init();
 
 	UFUNCTION()
 	void UpdateLog(FString Message);
 
 	UFUNCTION()
 	void FadeOutLog();
+
+	UFUNCTION()
+	void Reload();
+
+	UFUNCTION()
+	void Func01();
+
+	UFUNCTION()
+	void Func02();
 
 	UPROPERTY()
 	TArray<class UButton*> Buttons;
@@ -56,4 +67,6 @@ private:
 	class UTextBlock* DrawLogText;
 
 	FTimerHandle TimerHandle;
+
+	class AParsingPlayerController* PlayerController;
 };
