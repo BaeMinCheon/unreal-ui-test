@@ -54,8 +54,9 @@ public:
 	void Reload();
 
 protected:
-	void Load();
 	virtual void NativeConstruct() override;
+	void Parse();
+	void Load();
 
 private:
 	UPROPERTY(config)

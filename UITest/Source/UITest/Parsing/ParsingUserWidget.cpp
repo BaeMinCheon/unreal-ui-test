@@ -39,7 +39,7 @@ void UButtonProxy::FadeOutLog()
 	}
 }
 
-void UParsingUserWidget::Reload()
+void UParsingUserWidget::Parse()
 {
 	TArray<FString> Lines;
 	FFileHelper::LoadFileToStringArray(Lines, *ConfigFile);
@@ -70,7 +70,26 @@ void UParsingUserWidget::Reload()
 		Parts[1] = Parts[1].RightChop(1);
 		NamePairs[i].DisplayName = Parts[1];
 	}
+}
 
+void UParsingUserWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	ConfigSection = TEXT("/Script/UITest.ParsingUserWidget");
+	ConfigFile = FString::Printf(TEXT("%sWidget.ini"), *FPaths::SourceConfigDir());
+	PlayerController = Cast<AParsingPlayerController>(GetWorld()->GetFirstPlayerController());
+	FName TextName(TEXT("DrawLog_Text"));
+	DrawLogText = Cast<UTextBlock>(GetWidgetFromName(TextName));
+	DrawLogText->SetOpacity(0.0f);
+
+	Parse();
+	Load();
+}
+
+void UParsingUserWidget::Reload()
+{
+	Parse();
 	Load();
 }
 
@@ -95,18 +114,4 @@ void UParsingUserWidget::Load()
 		UTextBlock* Button01Text = Cast<UTextBlock>(Buttons[i]->GetChildAt(0));
 		Button01Text->SetText(FText::FromString(NamePairs[i].DisplayName));
 	}
-}
-
-void UParsingUserWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	ConfigSection = TEXT("/Script/UITest.ParsingUserWidget");
-	ConfigFile = FString::Printf(TEXT("%sDefaultWidget.ini"), *FPaths::SourceConfigDir());
-	PlayerController = Cast<AParsingPlayerController>(GetWorld()->GetFirstPlayerController());
-	FName TextName(TEXT("DrawLog_Text"));
-	DrawLogText = Cast<UTextBlock>(GetWidgetFromName(TextName));
-	DrawLogText->SetOpacity(0.0f);
-
-	Load();
 }
